@@ -1,0 +1,22 @@
+name: "Deploy"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: docker run -v "$PWD"/neuron:/notes sridca/neuron neuron gen
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: neuron/.neuron/output
+          publish_branch: html
+          commit_message: ${{ github.event.head_commit.message }}
